@@ -1,14 +1,14 @@
-FROM mcr.microsoft.com/devcontainers/typescript-node:22
+FROM mcr.microsoft.com/devcontainers/typescript-node:20
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release \
-        shellcheck \
-        unzip \
-        vim \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    shellcheck \
+    unzip \
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 # Helpful aliases

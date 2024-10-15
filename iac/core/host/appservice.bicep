@@ -10,7 +10,14 @@ param managedIdentity bool = !empty(keyVaultName)
 
 // Runtime Properties
 @allowed([
-  'dotnet', 'dotnetcore', 'dotnet-isolated', 'node', 'python', 'java', 'powershell', 'custom'
+  'dotnet'
+  'dotnetcore'
+  'dotnet-isolated'
+  'node'
+  'python'
+  'java'
+  'powershell'
+  'custom'
 ])
 param runtimeName string
 param runtimeNameAndVersion string = '${runtimeName}|${runtimeVersion}'
@@ -35,11 +42,12 @@ param use32BitWorkerProcess bool = false
 param ftpsState string = 'FtpsOnly'
 param healthCheckPath string = ''
 
-resource appService 'Microsoft.Web/sites@2022-03-01' = {
+resource site 'Microsoft.Web/sites@2022-09-01' = {
   name: name
   location: location
   tags: tags
   kind: kind
+  identity: { type: managedIdentity ? 'SystemAssigned' : 'None' }
   properties: {
     serverFarmId: appServicePlanId
     siteConfig: {
@@ -54,24 +62,29 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       functionAppScaleLimit: functionAppScaleLimit != -1 ? functionAppScaleLimit : null
       healthCheckPath: healthCheckPath
       cors: {
-        allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
+        allowedOrigins: union(['https://portal.azure.com', 'https://ms.portal.azure.com'], allowedOrigins)
       }
     }
     clientAffinityEnabled: clientAffinityEnabled
     httpsOnly: true
   }
 
-  identity: { type: managedIdentity ? 'SystemAssigned' : 'None' }
-
   resource configAppSettings 'config' = {
     name: 'appsettings'
-    properties: union(appSettings,
+    properties: union(
+      appSettings,
       {
         SCM_DO_BUILD_DURING_DEPLOYMENT: string(scmDoBuildDuringDeployment)
         ENABLE_ORYX_BUILD: string(enableOryxBuild)
       },
-      !empty(applicationInsightsName) ? { APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString } : {},
-      !empty(keyVaultName) ? { AZURE_KEY_VAULT_ENDPOINT: keyVault.properties.vaultUri } : {})
+      !empty(applicationInsightsName)
+        ? {
+            APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
+            XDT_MicrosoftApplicationInsights_Mode: 'default'
+          }
+        : {},
+      !empty(keyVaultName) ? { AZURE_KEY_VAULT_ENDPOINT: keyVault.properties.vaultUri } : {}
+    )
   }
 
   resource configLogs 'config' = {
@@ -96,7 +109,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: applicationInsightsName
 }
 
-output id string = appService.id
-output identityPrincipalId string = managedIdentity ? appService.identity.principalId : ''
-output name string = appService.name
-output uri string = 'https://${appService.properties.defaultHostName}'
+output id string = site.id
+output identityPrincipalId string = managedIdentity ? site.identity.principalId : ''
+output name string = site.name
+output uri string = 'https://${site.properties.defaultHostName}'

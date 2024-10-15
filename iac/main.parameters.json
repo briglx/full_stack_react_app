@@ -10,9 +10,6 @@
     },
     "location": {
       "value": "westus3"
-    },
-    "keyVaultName": {
-      "value": "kv-common-150077523"
     }
   }
 }

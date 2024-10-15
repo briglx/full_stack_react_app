@@ -35,10 +35,10 @@ az --version
 
 The solution uses several system identities.
 
-| System Identities        | Authentication                                             | Authorization                                                                                                                                                                  | Purpose                                                                                                                                                                                               |
-| ------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `env.CICD_CLIENT_NAME`   | OpenId Connect (OIDC) based Federated Identity Credentials | Subscription Contributor access<br>Microsoft Graph API admin consent Permissions: <ul><li>Directory.ReadWrite.All</li><li>User.Invite.All</li><li>User.ReadWrite.All</li></ul> | Deploy cloud resources: <ul><li>core infrastructure</li><li>web app</li></ul>                                                                                                                         |
-| `env.WEBAPP_CLIENT_NAME` | ClientID and Client Secret                                 | Microsoft Graph API permissions: <ul><li>Read User.ReadBasic.All</li></ul>                                                                                                     | Uses the identity package to obtain an access token from the Microsoft Identity platform.<br>The access token is used as a bearer token to authenticate the user when calling the Microsoft Graph API |
+| System Identities        | Authentication                                             | Authorization                                                              | Purpose                                                                                                                                                                                               |
+| ------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `env.CICD_CLIENT_NAME`   | OpenId Connect (OIDC) based Federated Identity Credentials | Subscription Contributor access                                            | Deploy cloud resources: <ul><li>core infrastructure</li><li>web app</li></ul>                                                                                                                         |
+| `env.WEBAPP_CLIENT_NAME` | ClientID and Client Secret                                 | Microsoft Graph API permissions: <ul><li>Read User.ReadBasic.All</li></ul> | Uses the identity package to obtain an access token from the Microsoft Identity platform.<br>The access token is used as a bearer token to authenticate the user when calling the Microsoft Graph API |
 
 Configure the environment variables. Copy `example.env` to `.env` and update the values
 
@@ -164,4 +164,6 @@ TBD
 
 - https://react.dev/learn/start-a-new-react-project
 - https://nextjs.org/learn-pages-router/basics/create-nextjs-app
+- App Service Plans Bicep Schema https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms?pivots=deployment-language-bicep#skudescription
+
 ```
